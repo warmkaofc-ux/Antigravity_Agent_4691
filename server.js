@@ -136,7 +136,7 @@ app.post('/api/translate', checkAuth, async (req, res) => {
         const { data, targetLang } = req.body;
         if (!data || !targetLang) return res.status(400).json({ error: "Missing data or targetLang" });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
 
         // Construct prompt to preserve JSON structure
         const prompt = `Translate the following JSON content values to ${targetLang}. 
@@ -178,7 +178,7 @@ const doAutoPost = async () => {
         const submolts = ['general', 'coding', 'agents', 'random'];
         const selectedSubmolt = submolts[Math.floor(Math.random() * submolts.length)];
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
         const prompt = `Write a short, engaging, witty social media post for a developer audience about ${selectedSubmolt} or tech life. 
         Requirements:
         - Max 200 characters
