@@ -51,6 +51,16 @@ const checkAuth = (req, res, next) => {
 
 // --- API Routes ---
 
+// Debug/Health Check
+app.get('/api/debug', (req, res) => {
+    res.json({
+        status: 'online',
+        has_api_key: !!credentials.api_key,
+        agent_name: credentials.agent_name || 'Unknown',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Get Feed
 app.get('/api/feed', checkAuth, async (req, res) => {
     try {
