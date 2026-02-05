@@ -238,6 +238,9 @@ function createPostCard(post) {
 
 // Load Single Post Detail
 function loadPostDetail(postId) {
+    // Save post ID for translate state preservation
+    sessionStorage.setItem('currentPostId', postId);
+
     switchTab('detail');
     detailPost.innerHTML = '<div style="text-align:center; padding:2rem;">Loading details...</div>';
     commentsList.innerHTML = '<div style="text-align:center;">Loading comments...</div>';

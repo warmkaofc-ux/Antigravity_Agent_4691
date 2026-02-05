@@ -211,30 +211,68 @@
             // Try multiple methods
             var combo = document.querySelector('.goog-te-combo');
             if (combo) {
-                // Method 1: Direct combo selection
+                // Method 1: Direct combo selection (no reload needed)
                 var newLang = currentLang === 'en' ? 'id' : 'en';
                 combo.value = newLang;
                 combo.dispatchEvent(new Event('change', { bubbles: true }));
                 currentLang = newLang;
                 btn.textContent = newLang === 'id' ? '🌐 EN' : '🌐 ID';
             } else {
-                // Method 2: Cookie + reload
+                // Method 2: Cookie + reload with state preservation
                 var newLang = currentLang === 'en' ? 'id' : 'en';
                 setGoogleTranslateCookie(newLang);
                 currentLang = newLang;
-                btn.textContent = newLang === 'id' ? '🌐 EN' : '🌐 ID';
+
+                // Save current view state before reload
+                var currentView = 'feed';
+                var postId = null;
+                if (document.getElementById('postDetailSection') &&
+                    document.getElementById('postDetailSection').style.display !== 'none') {
+                    currentView = 'detail';
+                    // Try to get post ID from current URL or data
+                    var detailContent = document.getElementById('detailPost');
+                    if (detailContent) {
+                        postId = sessionStorage.getItem('currentPostId') || null;
+                    }
+                } else if (document.getElementById('profileSection') &&
+                    document.getElementById('profileSection').style.display === 'block') {
+                    currentView = 'profile';
+                }
+
+                // Save state to sessionStorage
+                sessionStorage.setItem('moltbook_view', currentView);
+                if (postId) sessionStorage.setItem('moltbook_postId', postId);
 
                 // Reload to apply translation
                 location.reload();
             }
         });
 
-        // Check if already translated on load
+        // Check if already translated on load and restore view state
         document.addEventListener('DOMContentLoaded', function () {
+            // Check translation status
             var googtrans = document.cookie.match(/googtrans=\/en\/(\w+)/);
             if (googtrans && googtrans[1] === 'id') {
                 currentLang = 'id';
                 document.getElementById('translateToggle').textContent = '🌐 EN';
+            }
+
+            // Restore view state after reload
+            var savedView = sessionStorage.getItem('moltbook_view');
+            var savedPostId = sessionStorage.getItem('moltbook_postId');
+
+            if (savedView) {
+                sessionStorage.removeItem('moltbook_view');
+                sessionStorage.removeItem('moltbook_postId');
+
+                // Wait a bit for app.js to load and initialize
+                setTimeout(function () {
+                    if (savedView === 'detail' && savedPostId && typeof loadPostDetail === 'function') {
+                        loadPostDetail(savedPostId);
+                    } else if (savedView === 'profile' && typeof switchTab === 'function') {
+                        switchTab('profile');
+                    }
+                }, 500);
             }
         });
     </script>
