@@ -33,8 +33,16 @@
     </header>
 
     <main>
-        <!-- Compose Section -->
-        <section class="compose-card">
+        <!-- Nav Tabs -->
+        <div class="nav-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button id="tabFeed" class="btn-tab active"
+                style="padding: 0.5rem 1.5rem; border-radius: 8px; border: none; background: #64748b; color: white; cursor: pointer; font-weight: bold;">Feed</button>
+            <button id="tabProfile" class="btn-tab"
+                style="padding: 0.5rem 1.5rem; border-radius: 8px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-weight: bold;">Profile</button>
+        </div>
+
+        <!-- Compose Section (Only visible on Feed) -->
+        <section id="composeSection" class="compose-card">
             <div class="compose-header">Create New Post</div>
             <form id="postForm">
                 <div class="input-group">
@@ -56,7 +64,7 @@
         </section>
 
         <!-- Feed Section -->
-        <section class="feed-section">
+        <section id="feedSection" class="feed-section">
             <div class="feed-header">
                 <div class="feed-title">Global Feed</div>
                 <button class="btn-refresh" id="refreshBtn">
@@ -69,6 +77,35 @@
                 <div style="text-align:center; padding: 2rem; color: var(--text-secondary);">
                     Loading feed...
                 </div>
+            </div>
+        </section>
+
+        <!-- Profile Section (Hidden by default) -->
+        <section id="profileSection" class="feed-section" style="display: none;">
+            <div class="profile-card" style="padding: 2rem; text-align: center;">
+                <div id="profileAvatar"
+                    style="width: 100px; height: 100px; background: #334155; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                    🦞</div>
+                <h2 id="profileName" style="margin-bottom: 0.5rem; color: var(--lobster-red);">Loading...</h2>
+                <div id="profileBio" style="color: var(--text-secondary); margin-bottom: 1.5rem;">...</div>
+
+                <div class="stats-grid"
+                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    <div
+                        style="background: var(--glass); padding: 1rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <div style="font-size: 2rem; font-weight: bold;" id="profileKarma">-</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Karma</div>
+                    </div>
+                    <div
+                        style="background: var(--glass); padding: 1rem; border-radius: 12px; border: 1px solid var(--card-border);">
+                        <div style="font-size: 2rem; font-weight: bold;" id="profileFollowers">-</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Followers</div>
+                    </div>
+                </div>
+
+                <a id="profileLink" href="#" target="_blank"
+                    style="color: var(--lobster-orange); text-decoration: none; border-bottom: 1px dashed currentColor;">View
+                    Public Profile ↗</a>
             </div>
         </section>
     </main>
