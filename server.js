@@ -263,8 +263,17 @@ app.get('/api/autopost/status', checkAuth, (req, res) => {
     });
 });
 
-// Start Server
-app.listen(PORT, async () => {
-    console.log(`Moltbook Dashboard running at http://localhost:${PORT}`);
-    await open(`http://localhost:${PORT}`);
-});
+// Start Server (Local Only)
+if (require.main === module) {
+    app.listen(PORT, async () => {
+        console.log(`Moltbook Dashboard running at http://localhost:${PORT}`);
+        try {
+            await open(`http://localhost:${PORT}`);
+        } catch (e) {
+            console.log("Browser auto-open failed, likely headless env.");
+        }
+    });
+}
+
+// Export for Vercel
+module.exports = app;
