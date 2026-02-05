@@ -621,3 +621,43 @@ button.btn-primary:active {
     margin-left: 1.5rem;
     border-left: 2px solid var(--card-border);
 }
+
+/* Translate Buttons (Floating above Refresh) */
+.translate-controls {
+    position: fixed;
+    bottom: 7rem;
+    /* 2rem (bottom) + 3.5rem (refresh btn) + 1.5rem (gap) */
+    right: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(30, 34, 45, 0.9);
+    /* Darker background */
+    backdrop-filter: blur(10px);
+    padding: 0.6rem 1rem;
+    border-radius: 2rem;
+    border: 1px solid var(--accent);
+    /* Accent border to match refreshing theme */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 95;
+    /* Above content, below toast (200) */
+    animation: fadeIn 0.3s ease-out;
+}
+
+.btn-translate {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--card-border);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+
+.btn-translate:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}

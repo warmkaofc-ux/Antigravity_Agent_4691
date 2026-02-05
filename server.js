@@ -136,7 +136,8 @@ app.post('/api/translate', checkAuth, async (req, res) => {
         const { data, targetLang } = req.body;
         if (!data || !targetLang) return res.status(400).json({ error: "Missing data or targetLang" });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
+        // Use 'gemini-pro' as a stable fallback
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
         // Construct prompt to preserve JSON structure
         const prompt = `Translate the following JSON content values to ${targetLang}. 
