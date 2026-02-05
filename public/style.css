@@ -636,21 +636,22 @@ button.btn-primary:active {
     position: fixed;
     bottom: 7rem;
     right: 2rem;
-    z-index: 95;
+    z-index: 10000;
     background: rgba(30, 34, 45, 0.95);
     backdrop-filter: blur(10px);
-    padding: 0.2rem 0.6rem;
+    padding: 0.5rem 1rem;
     border-radius: 2rem;
     border: 1px solid var(--accent);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     animation: fadeIn 0.3s ease-out;
     /* Force compact dimensions */
-    max-width: 150px;
-    overflow: hidden;
-    height: 40px;
+    max-width: 160px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: auto !important;
+    cursor: pointer;
 }
 
 /* Force Google Widget to be transparent/cleaner */
