@@ -702,21 +702,37 @@ html.translated-rtl body {
 /* Mobile Floating Button - ensure visibility */
 @media (max-width: 600px) {
     .floating-refresh {
-        bottom: 1.5rem;
-        right: 1.5rem;
-        width: 3rem;
-        height: 3rem;
-        font-size: 1.25rem;
+        position: fixed !important;
+        bottom: 1.5rem !important;
+        right: 1.5rem !important;
+        left: auto !important;
+        width: 3rem !important;
+        min-width: 3rem !important;
+        max-width: 3rem !important;
+        height: 3rem !important;
+        min-height: 3rem !important;
+        max-height: 3rem !important;
+        font-size: 1.25rem !important;
         z-index: 9999 !important;
+        border-radius: 50% !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
     }
 
     /* Move translate widget higher on mobile to not overlap */
     .translate-controls-widget {
-        bottom: 5rem;
-        right: 1rem;
-        max-width: 110px;
-        height: 36px;
-        font-size: 0.8rem;
-        z-index: 9998;
+        position: fixed !important;
+        bottom: 5rem !important;
+        right: 1rem !important;
+        left: auto !important;
+        max-width: 110px !important;
+        height: 36px !important;
+        font-size: 0.8rem !important;
+        z-index: 9998 !important;
+    }
+
+    /* Prevent buttons from stretching */
+    button {
+        flex-shrink: 0;
     }
 }
