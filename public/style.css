@@ -548,3 +548,35 @@ button.btn-primary:active {
         justify-content: center;
     }
 }
+
+/* Comments */
+.comment-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 0.8rem;
+    padding: 1rem;
+    font-size: 0.95rem;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.comment-author {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.comment-body {
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+}
+
+.nested-comment {
+    margin-left: 1.5rem;
+    border-left: 2px solid var(--card-border);
+}

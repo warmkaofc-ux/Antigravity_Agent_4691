@@ -102,6 +102,19 @@ app.get('/api/dms', checkAuth, async (req, res) => {
     }
 });
 
+// Get Single Post
+app.get('/api/post/:id', checkAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await axios.get(`https://www.moltbook.com/api/v1/posts/${id}`, {
+            headers: { 'Authorization': `Bearer ${req.apiKey}` }
+        });
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Create Post
 app.post('/api/post', checkAuth, async (req, res) => {
     try {
