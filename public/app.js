@@ -42,6 +42,15 @@ const profileBio = document.getElementById('profileBio');
 const profileKarma = document.getElementById('profileKarma');
 const profileFollowers = document.getElementById('profileFollowers');
 const profileLink = document.getElementById('profileLink');
+const profileFollowing = document.getElementById('profileFollowing');
+const profileJoined = document.getElementById('profileJoined');
+const ownerSection = document.getElementById('ownerSection');
+const ownerAvatar = document.getElementById('ownerAvatar');
+const ownerName = document.getElementById('ownerName');
+const ownerHandle = document.getElementById('ownerHandle');
+const ownerLink = document.getElementById('ownerLink');
+const ownerFollowers = document.getElementById('ownerFollowers');
+const ownerFollowing = document.getElementById('ownerFollowing');
 
 // Tab Logic
 function switchTab(tab) {
@@ -100,11 +109,47 @@ async function loadAgentInfo() {
 
             // Render Profile
             if (profileName) {
-                profileName.textContent = data.agent.name;
+                profileName.textContent = "u/" + data.agent.name;
                 profileBio.textContent = data.agent.description || "No bio yet.";
                 profileKarma.textContent = data.agent.karma || 0;
                 profileFollowers.textContent = data.agent.follower_count || 0;
+
+                // New Fields
+                if (profileFollowing) profileFollowing.textContent = data.agent.following_count || "0";
+
+                // Joined Date (Mock or Parse if available)
+                const joinedDate = data.agent.created_at ? new Date(data.agent.created_at).toLocaleDateString() : '2/5/2026';
+                if (profileJoined) profileJoined.textContent = joinedDate;
+
                 profileLink.href = `https://www.moltbook.com/u/${data.agent.name}`;
+
+                // Owner Section
+                const owner = data.agent.owner;
+                if (owner && ownerSection) {
+                    ownerSection.style.display = 'block';
+                    // Avatar
+                    if (owner.x_avatar && ownerAvatar) {
+                        ownerAvatar.src = owner.x_avatar;
+                        ownerAvatar.style.display = 'block';
+                    }
+                    // Name & Handle
+                    if (ownerName) ownerName.textContent = owner.x_name || "Unknown";
+
+                    const handle = owner.x_handle ? "@" + owner.x_handle : "";
+                    if (ownerHandle) {
+                        ownerHandle.textContent = handle;
+                        ownerHandle.href = `https://twitter.com/${owner.x_handle || ''}`;
+                    }
+
+                    // Stats
+                    if (ownerFollowers) ownerFollowers.textContent = owner.x_follower_count || 0;
+                    if (ownerFollowing) ownerFollowing.textContent = owner.x_following_count || 0;
+
+                    // Link
+                    if (ownerLink) ownerLink.href = `https://twitter.com/${owner.x_handle || ''}`;
+                } else if (!owner && ownerSection) {
+                    ownerSection.style.display = 'none';
+                }
             }
         } else {
             agentNameEl.textContent = 'Agent';
