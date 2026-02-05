@@ -1,40 +1,21 @@
-// Removed top-level import to prevent crushing the app if Firebase fails
-// import { app, analytics } from './firebase-config.js';
+import { analytics, logAutoPost } from './firebase-config.js';
 
 const API_BASE = '/api';
 
-// Update Firebase UI
-const fbStatus = document.getElementById('firebaseStatus');
-
-async function initFirebase() {
-    try {
-        const { app, analytics } = await import('./firebase-config.js');
-        if (app && app.name) {
-            fbStatus.style.background = '#FFA000'; // Amber for Firebase
-            fbStatus.style.boxShadow = '0 0 10px #FFA000';
-            fbStatus.title = "Firebase: Connected (Analytics Active)";
-        }
-    } catch (err) {
-        console.warn("Firebase failed to load:", err);
-        fbStatus.style.background = '#ff0000'; // Red
-        fbStatus.title = "Firebase: Failed to load (AdBlock?)";
-    }
-}
-
 // DOM Elements
-const feedList = document.getElementById('feedList');
-const refreshBtn = document.getElementById('refreshBtn');
-const postForm = document.getElementById('postForm');
 const agentNameEl = document.getElementById('agentName');
-const autoPostBtn = document.getElementById('autoPostBtn');
-let isAutoPostActive = false;
-
-// Tabs & Sections
+const feedList = document.getElementById('feedList');
+const postForm = document.getElementById('postForm');
+const refreshBtn = document.getElementById('refreshBtn');
 const tabFeed = document.getElementById('tabFeed');
 const tabProfile = document.getElementById('tabProfile');
 const feedSection = document.getElementById('feedSection');
-const composeSection = document.getElementById('composeSection');
 const profileSection = document.getElementById('profileSection');
+const composeSection = document.getElementById('composeSection');
+
+// Auto-Post Elements
+const autoPostBtn = document.getElementById('autoPostBtn');
+const firebaseStatus = document.getElementById('firebaseStatus');
 
 // Profile Elements
 const profileName = document.getElementById('profileName');
@@ -52,12 +33,23 @@ const ownerLink = document.getElementById('ownerLink');
 const ownerFollowers = document.getElementById('ownerFollowers');
 const ownerFollowing = document.getElementById('ownerFollowing');
 
+// Post Detail Elements
+const postDetailSection = document.getElementById('postDetailSection');
+const detailPost = document.getElementById('detailPost');
+const commentsList = document.getElementById('commentsList');
+const backToFeedBtn = document.getElementById('backToFeedBtn');
+
+backToFeedBtn.addEventListener('click', () => {
+    switchTab('feed');
+});
+
 // Tab Logic
 function switchTab(tab) {
     if (tab === 'feed') {
         feedSection.style.display = 'block';
         composeSection.style.display = 'block';
         profileSection.style.display = 'none';
+        postDetailSection.style.display = 'none';
 
         tabFeed.classList.add('active');
         tabFeed.style.background = '#64748b';
@@ -66,10 +58,11 @@ function switchTab(tab) {
         tabProfile.classList.remove('active');
         tabProfile.style.background = 'transparent';
         tabProfile.style.color = 'var(--text-secondary)';
-    } else {
+    } else if (tab === 'profile') {
         feedSection.style.display = 'none';
         composeSection.style.display = 'none';
         profileSection.style.display = 'block';
+        postDetailSection.style.display = 'none';
 
         tabProfile.classList.add('active');
         tabProfile.style.background = '#64748b';
@@ -78,24 +71,38 @@ function switchTab(tab) {
         tabFeed.classList.remove('active');
         tabFeed.style.background = 'transparent';
         tabFeed.style.color = 'var(--text-secondary)';
+    } else if (tab === 'detail') {
+        feedSection.style.display = 'none';
+        composeSection.style.display = 'none';
+        profileSection.style.display = 'none';
+        postDetailSection.style.display = 'block';
+
+        // Deselect tabs
+        tabFeed.classList.remove('active');
+        tabFeed.style.background = 'transparent';
+        tabProfile.classList.remove('active');
+        tabProfile.style.background = 'transparent';
     }
 }
 
 tabFeed.addEventListener('click', () => switchTab('feed'));
-tabProfile.addEventListener('click', () => switchTab('profile'));
+tabProfile.addEventListener('click', () => {
+    switchTab('profile');
+    loadAgentInfo(); // Refresh profile data
+});
 
 // State
 let agentInfo = null;
 
 // Init
 async function init() {
-    // Start Firebase in background (don't await so app loads fast)
-    initFirebase();
-
-    // Core App
     await loadAgentInfo();
-    await updateAutoPostUI();
     await loadFeed();
+    checkAutoPostStatus();
+    if (analytics) {
+        firebaseStatus.style.background = '#10b981'; // Green
+        firebaseStatus.title = "Firebase Analytics Connected";
+    }
 }
 
 // Load Agent Info
@@ -103,11 +110,14 @@ async function loadAgentInfo() {
     try {
         const res = await fetch(`${API_BASE}/me`);
         const data = await res.json();
+
         if (data.agent) {
             agentInfo = data.agent;
+
+            // Header
             agentNameEl.textContent = data.agent.name;
 
-            // Render Profile
+            // Render Profile UI (if elements exist)
             if (profileName) {
                 profileName.textContent = "u/" + data.agent.name;
                 profileBio.textContent = data.agent.description || "No bio yet.";
@@ -163,97 +173,181 @@ async function loadAgentInfo() {
 
 // Load Feed
 async function loadFeed() {
-    feedList.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--text-secondary);">Loading feed...</div>';
-
+    feedList.innerHTML = '<div style="text-align:center; padding: 2rem;">Loading feed...</div>';
     try {
         const res = await fetch(`${API_BASE}/feed`);
         const data = await res.json();
 
+        feedList.innerHTML = '';
         if (data.posts && data.posts.length > 0) {
-            renderPosts(data.posts);
+            data.posts.forEach(post => {
+                feedList.appendChild(createPostCard(post));
+            });
         } else {
-            feedList.innerHTML = '<div style="text-align:center; padding: 2rem;">No posts found.</div>';
+            feedList.innerHTML = '<div style="text-align:center;">No posts yet.</div>';
         }
     } catch (err) {
-        console.error('Failed to load feed', err);
-        feedList.innerHTML = `<div style="text-align:center; padding: 2rem; color: #ff6b6b;">Error loading feed: ${err.message}</div>`;
+        feedList.innerHTML = '<div style="text-align:center; color: #ff4500;">Failed to load feed.</div>';
     }
 }
 
-// Render Posts
-function renderPosts(posts) {
-    feedList.innerHTML = '';
-    posts.forEach(post => {
-        const card = document.createElement('div');
-        card.className = 'post-card';
-        card.innerHTML = `
-            <div class="post-meta">
-                <span><span class="submolt-tag">m/${post.submolt}</span> • @${post.author.name}</span>
-                <span>${new Date(post.created_at).toLocaleTimeString()}</span>
-            </div>
-            <div class="post-title">${escapeHtml(post.title)}</div>
-            <div class="post-content">${escapeHtml(post.content || post.url || '')}</div>
-            <div class="post-footer">
-                <span class="stat">⬆ ${post.upvotes}</span>
-                <span class="stat">💬 ${post.comment_count || 0} Comments</span>
-            </div>
-        `;
-        feedList.appendChild(card);
+// Create Post Card (Modified for Click)
+function createPostCard(post) {
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.style.cursor = 'pointer'; // Make clickable
+
+    card.innerHTML = `
+        <div class="post-meta">
+            <span class="submolt-tag">m/${post.submolt_name}</span>
+            <span>${new Date(post.created_at).toLocaleString()}</span>
+        </div>
+        <div class="post-title">${post.title}</div>
+        <div class="post-content">${post.content}</div>
+        <div class="post-footer">
+            <div class="stat">⬆ ${post.upvotes}</div>
+            <div class="stat">💬 ${post.comment_count}</div>
+            <div class="stat" style="margin-left:auto; font-size:0.8rem;">by u/${post.agent_name}</div>
+        </div>
+    `;
+
+    // Add click event
+    card.addEventListener('click', (e) => {
+        loadPostDetail(post.id);
     });
+
+    return card;
 }
 
-// Create Post
+// Load Single Post Detail
+async function loadPostDetail(postId) {
+    switchTab('detail');
+    detailPost.innerHTML = '<div style="text-align:center; padding:2rem;">Loading details...</div>';
+    commentsList.innerHTML = '<div style="text-align:center;">Loading comments...</div>';
+
+    try {
+        const res = await fetch(`${API_BASE}/post/${postId}`);
+        const data = await res.json();
+
+        if (data.post) {
+            // Render Post
+            detailPost.innerHTML = `
+                <div class="post-meta">
+                    <span class="submolt-tag">m/${data.post.submolt_name}</span>
+                    <span>${new Date(data.post.created_at).toLocaleString()}</span>
+                </div>
+                <div class="post-title">${data.post.title}</div>
+                <div class="post-content">${data.post.content}</div>
+                <div class="post-footer">
+                    <div class="stat">⬆ ${data.post.upvotes}</div>
+                    <div class="stat">💬 ${data.post.comment_count}</div>
+                    <div class="stat" style="margin-left:auto; font-size:0.8rem;">by u/${data.post.agent_name}</div>
+                </div>
+            `;
+
+            // Render Comments
+            commentsList.innerHTML = '';
+            if (data.comments && data.comments.length > 0) {
+                data.comments.forEach(comment => {
+                    const el = document.createElement('div');
+                    el.className = 'comment-card';
+                    el.innerHTML = `
+                        <div class="comment-header">
+                            <span class="comment-author">u/${comment.agent_name}</span>
+                            <span>${new Date(comment.created_at).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="comment-body">${comment.content}</div>
+                    `;
+                    commentsList.appendChild(el);
+                });
+            } else {
+                commentsList.innerHTML = '<div style="text-align:center; color:var(--text-secondary);">No comments yet.</div>';
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load post detail', err);
+        detailPost.innerHTML = '<div style="color:red; text-align:center;">Failed to load post.</div>';
+    }
+}
+
+// Create New Post
 postForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const submolt = document.getElementById('submoltSelect').value;
-    const title = document.getElementById('postTitle').value;
-    const content = document.getElementById('postContent').value;
     const btn = postForm.querySelector('button');
-
-    // Button Loading State
-    const originalText = btn.textContent;
-    btn.textContent = 'Posting...';
     btn.disabled = true;
+    btn.textContent = 'Posting...';
+
+    const postData = {
+        title: document.getElementById('postTitle').value,
+        content: document.getElementById('postContent').value,
+        submolt: document.getElementById('submoltSelect').value
+    };
 
     try {
         const res = await fetch(`${API_BASE}/post`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ submolt, title, content })
+            body: JSON.stringify(postData)
         });
 
-        const data = await res.json();
-
-        if (data.success || data.post) {
-            showToast('Post created successfully! 🦞');
+        if (res.ok) {
             postForm.reset();
-            loadFeed(); // Reload feed to show new post
+            loadFeed(); // Reload feed
+            showToast("Posted successfully!");
         } else {
-            throw new Error(data.error || 'Unknown error');
+            showToast("Failed to post");
         }
     } catch (err) {
-        alert('Failed to post: ' + err.message);
+        console.error(err);
+        showToast("Error creating post");
     } finally {
-        btn.textContent = originalText;
         btn.disabled = false;
+        btn.textContent = 'Post to Moltbook';
     }
 });
 
-// Refresh Button
-refreshBtn.addEventListener('click', loadFeed);
-
-// Utility: Escape HTML to avoid XSS
-function escapeHtml(text) {
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+// Auto Post Logic
+async function checkAutoPostStatus() {
+    try {
+        const res = await fetch(`${API_BASE}/autopost/status`);
+        const data = await res.json();
+        updateAutoPostUI(data.status === 'active');
+    } catch (err) {
+        console.error("Failed to check status", err);
+    }
 }
 
-// Utility: Show Toast
+async function toggleAutoPost() {
+    const isCurrentlyOn = autoPostBtn.textContent === 'ON';
+    const endpoint = isCurrentlyOn ? 'stop' : 'start';
+
+    try {
+        autoPostBtn.disabled = true;
+        const res = await fetch(`${API_BASE}/autopost/${endpoint}`, { method: 'POST' });
+        const data = await res.json();
+
+        updateAutoPostUI(data.status === 'active');
+    } catch (err) {
+        console.error("Failed to toggle autopost", err);
+    } finally {
+        autoPostBtn.disabled = false;
+    }
+}
+
+function updateAutoPostUI(isActive) {
+    if (isActive) {
+        autoPostBtn.textContent = 'ON';
+        autoPostBtn.style.color = '#10b981';
+    } else {
+        autoPostBtn.textContent = 'OFF';
+        autoPostBtn.style.color = '#64748b';
+    }
+}
+
+autoPostBtn.addEventListener('click', toggleAutoPost);
+refreshBtn.addEventListener('click', loadFeed);
+
+// Utility
 function showToast(msg) {
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -262,44 +356,4 @@ function showToast(msg) {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// --- Auto-Post Logic ---
-// (Variables declared at top)
-
-async function updateAutoPostUI() {
-    try {
-        const res = await fetch(`${API_BASE}/autopost/status`);
-        const data = await res.json();
-
-        isAutoPostActive = (data.status === 'active');
-        renderAutoPostBtn();
-    } catch (err) {
-        console.error('Failed to get autopost status', err);
-    }
-}
-
-function renderAutoPostBtn() {
-    if (isAutoPostActive) {
-        autoPostBtn.textContent = 'ON';
-        autoPostBtn.style.color = '#10b981'; // Green
-    } else {
-        autoPostBtn.textContent = 'OFF';
-        autoPostBtn.style.color = '#64748b'; // Gray
-    }
-}
-
-autoPostBtn.addEventListener('click', async () => {
-    const endpoint = isAutoPostActive ? '/autopost/stop' : '/autopost/start';
-
-    try {
-        const res = await fetch(`${API_BASE}${endpoint}`, { method: 'POST' });
-        const data = await res.json();
-
-        showToast(data.message);
-        await updateAutoPostUI();
-    } catch (err) {
-        showToast('Error toggling auto-post');
-    }
-});
-
-// Start
 init();

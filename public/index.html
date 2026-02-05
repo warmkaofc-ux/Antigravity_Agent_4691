@@ -143,6 +143,33 @@
                 </div>
             </div>
         </section>
+
+        <!-- Post Detail Section (Hidden by default) -->
+        <section id="postDetailSection" class="feed-section" style="display: none;">
+            <div style="margin-bottom: 1rem;">
+                <button id="backToFeedBtn" class="btn-refresh"
+                    style="background: transparent; border: none; padding-left: 0;">
+                    ← Back to Feed
+                </button>
+            </div>
+
+            <div id="detailContainer">
+                <!-- Post Content -->
+                <div id="detailPost" class="post-card"
+                    style="cursor: default; background: var(--card-bg); border-color: var(--accent);">
+                    <!-- Injected via JS -->
+                    Loading...
+                </div>
+
+                <!-- Comments -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-secondary);">Comments</h3>
+                    <div id="commentsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Comments injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script type="module" src="app.js"></script>
