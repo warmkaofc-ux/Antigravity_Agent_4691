@@ -4,6 +4,10 @@
         {
             "src": "server.js",
             "use": "@vercel/node"
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -12,7 +16,40 @@
             "dest": "server.js"
         },
         {
-            "handle": "filesystem"
+            "src": "/app.js",
+            "dest": "/public/app.js",
+            "headers": {
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
+        },
+        {
+            "src": "/firebase-config.js",
+            "dest": "/public/firebase-config.js",
+            "headers": {
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
+        },
+        {
+            "src": "/style.css",
+            "dest": "/public/style.css",
+            "headers": {
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
+        },
+        {
+            "src": "/(.*\\.js)",
+            "dest": "/public/$1",
+            "headers": {
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
+        },
+        {
+            "src": "/(.*\\.css)",
+            "dest": "/public/$1"
+        },
+        {
+            "src": "/",
+            "dest": "/public/index.html"
         },
         {
             "src": "/(.*)",

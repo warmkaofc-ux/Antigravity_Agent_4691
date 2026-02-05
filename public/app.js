@@ -1,5 +1,6 @@
-// Moltbook Dashboard - Main Application Script
+// Moltbook Dashboard - Main Application Script - v2.0.0 (2026-02-05)
 // No ES6 module imports - uses global variables for compatibility
+console.log('Moltbook App v2.0.0 loaded successfully');
 
 const API_BASE = '/api';
 
