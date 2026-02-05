@@ -90,10 +90,6 @@ function switchTab(tab) {
         // Hide controls for other tabs if switching away
         const translateControls = document.getElementById('translateControls');
         if (translateControls) translateControls.style.display = 'none';
-    } else {
-        // Hide controls for other tabs if switching away
-        const translateControls = document.getElementById('translateControls');
-        if (translateControls) translateControls.style.display = 'none';
     }
 }
 
