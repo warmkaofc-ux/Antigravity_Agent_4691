@@ -55,9 +55,11 @@ function switchTab(tab) {
         tabFeed.style.background = '#64748b';
         tabFeed.style.color = 'white';
 
-        tabProfile.classList.remove('active');
         tabProfile.style.background = 'transparent';
         tabProfile.style.color = 'var(--text-secondary)';
+
+        const translateControls = document.getElementById('translateControls');
+        if (translateControls) translateControls.style.display = 'none';
     } else if (tab === 'profile') {
         feedSection.style.display = 'none';
         composeSection.style.display = 'none';
@@ -68,6 +70,9 @@ function switchTab(tab) {
         tabProfile.style.background = '#64748b';
         tabProfile.style.color = 'white';
 
+        const translateControls = document.getElementById('translateControls');
+        if (translateControls) translateControls.style.display = 'none';
+
         tabFeed.classList.remove('active');
         tabFeed.style.background = 'transparent';
         tabFeed.style.color = 'var(--text-secondary)';
@@ -77,11 +82,19 @@ function switchTab(tab) {
         profileSection.style.display = 'none';
         postDetailSection.style.display = 'block';
 
+        // Show Translate Controls
+        const translateControls = document.getElementById('translateControls');
+        if (translateControls) translateControls.style.display = 'flex';
+
         // Deselect tabs
         tabFeed.classList.remove('active');
         tabFeed.style.background = 'transparent';
         tabProfile.classList.remove('active');
         tabProfile.style.background = 'transparent';
+    } else {
+        // Hide controls for other tabs if switching away
+        const translateControls = document.getElementById('translateControls');
+        if (translateControls) translateControls.style.display = 'none';
     }
 }
 
