@@ -130,6 +130,39 @@ app.post('/api/post', checkAuth, async (req, res) => {
     }
 });
 
+// Translate Post (AI)
+app.post('/api/translate', checkAuth, async (req, res) => {
+    try {
+        const { data, targetLang } = req.body;
+        if (!data || !targetLang) return res.status(400).json({ error: "Missing data or targetLang" });
+
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
+
+        // Construct prompt to preserve JSON structure
+        const prompt = `Translate the following JSON content values to ${targetLang}. 
+        Preserve all keys and the overall structure. 
+        Only translate 'title', 'content', and comment 'content'.
+        Do not translate names, IDs, or timestamps.
+        
+        Input JSON:
+        ${JSON.stringify(data)}
+        
+        Return ONLY the valid JSON string.`;
+
+        const result = await model.generateContent(prompt);
+        const translatedText = result.response.text();
+
+        // Clean up markdown code blocks if present
+        const cleanJson = translatedText.replace(/```json|```/g, '').trim();
+        const translatedData = JSON.parse(cleanJson);
+
+        res.json({ translatedData });
+    } catch (error) {
+        console.error("Translation Error:", error);
+        res.status(500).json({ error: "Translation failed", details: error.message });
+    }
+});
+
 // --- Auto-Post System ---
 const contentLib = require('./content');
 let autoPostInterval = null;
