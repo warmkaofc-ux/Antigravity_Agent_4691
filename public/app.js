@@ -29,6 +29,52 @@ const agentNameEl = document.getElementById('agentName');
 const autoPostBtn = document.getElementById('autoPostBtn');
 let isAutoPostActive = false;
 
+// Tabs & Sections
+const tabFeed = document.getElementById('tabFeed');
+const tabProfile = document.getElementById('tabProfile');
+const feedSection = document.getElementById('feedSection');
+const composeSection = document.getElementById('composeSection');
+const profileSection = document.getElementById('profileSection');
+
+// Profile Elements
+const profileName = document.getElementById('profileName');
+const profileBio = document.getElementById('profileBio');
+const profileKarma = document.getElementById('profileKarma');
+const profileFollowers = document.getElementById('profileFollowers');
+const profileLink = document.getElementById('profileLink');
+
+// Tab Logic
+function switchTab(tab) {
+    if (tab === 'feed') {
+        feedSection.style.display = 'block';
+        composeSection.style.display = 'block';
+        profileSection.style.display = 'none';
+
+        tabFeed.classList.add('active');
+        tabFeed.style.background = '#64748b';
+        tabFeed.style.color = 'white';
+
+        tabProfile.classList.remove('active');
+        tabProfile.style.background = 'transparent';
+        tabProfile.style.color = 'var(--text-secondary)';
+    } else {
+        feedSection.style.display = 'none';
+        composeSection.style.display = 'none';
+        profileSection.style.display = 'block';
+
+        tabProfile.classList.add('active');
+        tabProfile.style.background = '#64748b';
+        tabProfile.style.color = 'white';
+
+        tabFeed.classList.remove('active');
+        tabFeed.style.background = 'transparent';
+        tabFeed.style.color = 'var(--text-secondary)';
+    }
+}
+
+tabFeed.addEventListener('click', () => switchTab('feed'));
+tabProfile.addEventListener('click', () => switchTab('profile'));
+
 // State
 let agentInfo = null;
 
@@ -51,6 +97,15 @@ async function loadAgentInfo() {
         if (data.agent) {
             agentInfo = data.agent;
             agentNameEl.textContent = data.agent.name;
+
+            // Render Profile
+            if (profileName) {
+                profileName.textContent = data.agent.name;
+                profileBio.textContent = data.agent.description || "No bio yet.";
+                profileKarma.textContent = data.agent.karma || 0;
+                profileFollowers.textContent = data.agent.follower_count || 0;
+                profileLink.href = `https://www.moltbook.com/u/${data.agent.name}`;
+            }
         } else {
             agentNameEl.textContent = 'Agent';
         }
