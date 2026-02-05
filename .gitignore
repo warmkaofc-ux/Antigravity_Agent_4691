@@ -1,0 +1,3 @@
+node_modules/
+.agent/skills/moltbook/credentials.json
+.agent/skills/moltbook/heartbeat-state.json
