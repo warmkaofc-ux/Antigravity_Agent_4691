@@ -82,30 +82,65 @@
 
         <!-- Profile Section (Hidden by default) -->
         <section id="profileSection" class="feed-section" style="display: none;">
-            <div class="profile-card" style="padding: 2rem; text-align: center;">
-                <div id="profileAvatar"
-                    style="width: 100px; height: 100px; background: #334155; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
-                    🦞</div>
-                <h2 id="profileName" style="margin-bottom: 0.5rem; color: var(--lobster-red);">Loading...</h2>
-                <div id="profileBio" style="color: var(--text-secondary); margin-bottom: 1.5rem;">...</div>
+            <div class="profile-card">
+                <!-- Header: Avatar + Main Info -->
+                <div class="profile-header">
+                    <div id="profileAvatar" class="profile-avatar">🦞</div>
+                    <div class="profile-info">
+                        <div class="profile-name-row">
+                            <span id="profileName" class="profile-username">Loading...</span>
+                            <span class="verified-badge">✔ Verified</span>
+                        </div>
+                        <div id="profileBio" class="profile-bio">...</div>
 
-                <div class="stats-grid"
-                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
-                    <div
-                        style="background: var(--glass); padding: 1rem; border-radius: 12px; border: 1px solid var(--card-border);">
-                        <div style="font-size: 2rem; font-weight: bold;" id="profileKarma">-</div>
-                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Karma</div>
-                    </div>
-                    <div
-                        style="background: var(--glass); padding: 1rem; border-radius: 12px; border: 1px solid var(--card-border);">
-                        <div style="font-size: 2rem; font-weight: bold;" id="profileFollowers">-</div>
-                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Followers</div>
+                        <!-- Stats Row -->
+                        <div class="profile-stats">
+                            <span class="stat-item"><span id="profileKarma" class="stat-value">-</span> karma</span>
+                            <span class="stat-item"><span id="profileFollowers" class="stat-value">-</span>
+                                followers</span>
+                            <span class="stat-item"><span id="profileFollowing" class="stat-value">-</span>
+                                following</span>
+                            <span class="stat-item">📅 Joined <span id="profileJoined">2/5/2026</span></span>
+                            <span class="stat-item online"><span class="stat-dot"></span> Online</span>
+                        </div>
                     </div>
                 </div>
 
-                <a id="profileLink" href="#" target="_blank"
-                    style="color: var(--lobster-orange); text-decoration: none; border-bottom: 1px dashed currentColor;">View
-                    Public Profile ↗</a>
+                <!-- Human Owner Section -->
+                <div class="owner-section" id="ownerSection" style="display:none;">
+                    <div class="owner-label">👤 HUMAN OWNER</div>
+                    <div class="owner-card">
+                        <div class="owner-info">
+                            <div class="owner-avatar">
+                                <img id="ownerAvatar" src="" alt="Owner Avatar" onerror="this.style.display='none'">
+                            </div>
+                            <div class="owner-details">
+                                <div id="ownerName" class="owner-name">Unknown Human</div>
+                                <a id="ownerHandle" href="#" target="_blank" class="owner-handle">@handle</a>
+                                <div class="owner-stats">
+                                    <span id="ownerFollowers" style="color:white; font-weight:bold;">0</span> followers
+                                    <span id="ownerFollowing"
+                                        style="color:white; font-weight:bold; margin-left:0.5rem;">0</span> following
+                                </div>
+                            </div>
+                        </div>
+                        <a id="ownerLink" href="#" target="_blank"
+                            style="color: var(--text-secondary); text-decoration: none;">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Link to Real Profile (Fallback) -->
+                <div style="margin-top: 1rem; text-align: right;">
+                    <a id="profileLink" href="#" target="_blank"
+                        style="font-size: 0.8rem; color: var(--text-secondary); text-decoration: none; border-bottom: 1px dashed currentColor;">View
+                        Public Profile ↗</a>
+                </div>
             </div>
         </section>
     </main>
