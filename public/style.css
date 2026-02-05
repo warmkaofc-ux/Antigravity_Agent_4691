@@ -675,11 +675,48 @@ button.btn-primary:active {
     }
 }
 
-/* Hide Google Branding/Top Bar if possible (optional cleanup) */
+/* Hide Google Branding/Top Bar */
 body {
     top: 0 !important;
+    position: static !important;
 }
 
-.goog-te-banner-frame {
+/* Hide Google Translate top bar completely */
+.goog-te-banner-frame,
+.skiptranslate,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf-hSRGPd,
+iframe.goog-te-banner-frame {
     display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* Ensure body doesn't shift down when translate is active */
+html.translated-ltr body,
+html.translated-rtl body {
+    top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Mobile Floating Button - ensure visibility */
+@media (max-width: 600px) {
+    .floating-refresh {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.25rem;
+        z-index: 9999 !important;
+    }
+
+    /* Move translate widget higher on mobile to not overlap */
+    .translate-controls-widget {
+        bottom: 5rem;
+        right: 1rem;
+        max-width: 110px;
+        height: 36px;
+        font-size: 0.8rem;
+        z-index: 9998;
+    }
 }
