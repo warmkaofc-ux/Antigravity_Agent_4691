@@ -450,13 +450,32 @@ button.btn-primary:active {
 
     /* Header Adjustments */
     header {
+        flex-direction: column;
         padding: 1rem;
-        /* Smaller padding */
+        gap: 1rem;
+    }
+
+    .logo {
+        width: 100%;
+        justify-content: center;
+        /* Center logo */
     }
 
     .agent-status {
         display: none;
-        /* Hide agent status on very smell screens to save space? or just reduce */
+        /* Keep hidden on mobile to save space */
+    }
+
+    .autopost-control {
+        margin-left: 0 !important;
+        /* Override inline style */
+        width: 100%;
+        justify-content: center;
+    }
+
+    #firebaseStatus {
+        display: none;
+        /* Hide small dot on mobile, cleaner */
     }
 
     /* Tabs */
