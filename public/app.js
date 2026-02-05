@@ -347,6 +347,17 @@ function updateAutoPostUI(isActive) {
 autoPostBtn.addEventListener('click', toggleAutoPost);
 refreshBtn.addEventListener('click', loadFeed);
 
+// Floating Refresh Logic
+const floatingRefresh = document.getElementById('floatingRefresh');
+if (floatingRefresh) {
+    floatingRefresh.addEventListener('click', async () => {
+        floatingRefresh.classList.add('spin');
+        await loadFeed();
+        // Keep spinning a bit longer for effect? No, just remove enabled
+        setTimeout(() => floatingRefresh.classList.remove('spin'), 500);
+    });
+}
+
 // Utility
 function showToast(msg) {
     const toast = document.createElement('div');

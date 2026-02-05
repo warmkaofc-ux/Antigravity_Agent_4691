@@ -422,7 +422,8 @@ button.btn-primary:active {
 /* Toast */
 .toast {
     position: fixed;
-    bottom: 2rem;
+    bottom: 6rem;
+    /* Moved up to avoid floating button */
     right: 2rem;
     background: #1e222d;
     border: 1px solid var(--accent);
@@ -431,6 +432,46 @@ button.btn-primary:active {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     animation: slideIn 0.3s ease-out;
     z-index: 200;
+}
+
+/* Floating Refresh Button */
+.floating-refresh {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.floating-refresh:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.floating-refresh:active {
+    transform: scale(0.95);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes slideIn {
