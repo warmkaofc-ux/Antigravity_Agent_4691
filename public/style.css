@@ -621,3 +621,25 @@ button.btn-primary:active {
     margin-left: 1.5rem;
     border-left: 2px solid var(--card-border);
 }
+
+/* Translate Buttons */
+.translate-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-translate {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--card-border);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s;
+}
+
+.btn-translate:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

@@ -230,39 +230,8 @@ async function loadPostDetail(postId) {
         const data = await res.json();
 
         if (data.post) {
-            // Render Post
-            detailPost.innerHTML = `
-                <div class="post-meta">
-                    <span class="submolt-tag">m/${data.post.submolt_name}</span>
-                    <span>${new Date(data.post.created_at).toLocaleString()}</span>
-                </div>
-                <div class="post-title">${data.post.title}</div>
-                <div class="post-content">${data.post.content}</div>
-                <div class="post-footer">
-                    <div class="stat">⬆ ${data.post.upvotes}</div>
-                    <div class="stat">💬 ${data.post.comment_count}</div>
-                    <div class="stat" style="margin-left:auto; font-size:0.8rem;">by u/${data.post.agent_name}</div>
-                </div>
-            `;
-
-            // Render Comments
-            commentsList.innerHTML = '';
-            if (data.comments && data.comments.length > 0) {
-                data.comments.forEach(comment => {
-                    const el = document.createElement('div');
-                    el.className = 'comment-card';
-                    el.innerHTML = `
-                        <div class="comment-header">
-                            <span class="comment-author">u/${comment.agent_name}</span>
-                            <span>${new Date(comment.created_at).toLocaleTimeString()}</span>
-                        </div>
-                        <div class="comment-body">${comment.content}</div>
-                    `;
-                    commentsList.appendChild(el);
-                });
-            } else {
-                commentsList.innerHTML = '<div style="text-align:center; color:var(--text-secondary);">No comments yet.</div>';
-            }
+            currentPostData = data; // Store for translation
+            renderPostDetailContent(data);
         }
     } catch (err) {
         console.error('Failed to load post detail', err);
@@ -365,6 +334,81 @@ function showToast(msg) {
     toast.textContent = msg;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+}
+
+// Translation Logic
+let currentPostData = null; // Store current post for translation
+
+window.triggerTranslate = async (targetLang) => {
+    if (!currentPostData) return;
+
+    const originalText = detailPost.innerHTML; // Save loading state visual if needed later
+    detailPost.style.opacity = '0.5';
+    commentsList.style.opacity = '0.5';
+    showToast(`Translating to ${targetLang}...`);
+
+    try {
+        const res = await fetch(`${API_BASE}/translate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                data: currentPostData,
+                targetLang
+            })
+        });
+
+        const result = await res.json();
+        if (result.translatedData) {
+            renderPostDetailContent(result.translatedData);
+            showToast("Translation Complete");
+        } else {
+            showToast("Translation Failed");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Error Translating");
+    } finally {
+        detailPost.style.opacity = '1';
+        commentsList.style.opacity = '1';
+    }
+};
+
+function renderPostDetailContent(data) {
+    if (data.post) {
+        // Render Post
+        detailPost.innerHTML = `
+            <div class="post-meta">
+                <span class="submolt-tag">m/${data.post.submolt_name}</span>
+                <span>${new Date(data.post.created_at).toLocaleString()}</span>
+            </div>
+            <div class="post-title">${data.post.title}</div>
+            <div class="post-content">${data.post.content}</div>
+            <div class="post-footer">
+                <div class="stat">⬆ ${data.post.upvotes}</div>
+                <div class="stat">💬 ${data.post.comment_count}</div>
+                <div class="stat" style="margin-left:auto; font-size:0.8rem;">by u/${data.post.agent_name}</div>
+            </div>
+        `;
+
+        // Render Comments
+        commentsList.innerHTML = '';
+        if (data.comments && data.comments.length > 0) {
+            data.comments.forEach(comment => {
+                const el = document.createElement('div');
+                el.className = 'comment-card';
+                el.innerHTML = `
+                    <div class="comment-header">
+                        <span class="comment-author">u/${comment.agent_name}</span>
+                        <span>${new Date(comment.created_at).toLocaleTimeString()}</span>
+                    </div>
+                    <div class="comment-body">${comment.content}</div>
+                `;
+                commentsList.appendChild(el);
+            });
+        } else {
+            commentsList.innerHTML = '<div style="text-align:center; color:var(--text-secondary);">No comments yet.</div>';
+        }
+    }
 }
 
 init();
