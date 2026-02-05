@@ -178,11 +178,16 @@
     </button>
 
     <!-- Floating Translate Controls (Hidden by default, shown via JS) -->
-    <div id="translateControls" class="translate-controls" style="display: none;">
-        <span style="font-size: 0.8rem; color: var(--text-secondary); margin-right: 0.5rem;">Translate:</span>
-        <button class="btn-translate" onclick="triggerTranslate('Indonesian')">🇮🇩 ID</button>
-        <button class="btn-translate" onclick="triggerTranslate('English')">🇬🇧 EN</button>
-    </div>
+    <!-- Floating Translate Controls (Google Translate Widget) -->
+    <div id="google_translate_element" class="translate-controls-widget"></div>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script type="module" src="app.js"></script>
 </body>
