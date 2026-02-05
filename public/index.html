@@ -177,9 +177,13 @@
         ⟳
     </button>
 
-    <!-- Floating Translate Controls (Hidden by default, shown via JS) -->
-    <!-- Floating Translate Controls (Google Translate Widget) -->
-    <div id="google_translate_element" class="translate-controls-widget"></div>
+    <!-- Floating Translate Controls -->
+    <div class="translate-controls-widget">
+        <button id="translateToggle" class="translate-btn">🌐 ID / EN</button>
+    </div>
+
+    <!-- Hidden Google Translate Widget -->
+    <div id="google_translate_element" style="display:none;"></div>
 
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -190,6 +194,22 @@
                 autoDisplay: false
             }, 'google_translate_element');
         }
+
+        // Custom translate toggle
+        document.getElementById('translateToggle').addEventListener('click', function () {
+            // Trigger Google Translate dropdown
+            var widget = document.querySelector('.goog-te-combo');
+            if (widget) {
+                var currentLang = widget.value;
+                widget.value = currentLang === 'id' ? 'en' : 'id';
+                widget.dispatchEvent(new Event('change'));
+                this.textContent = currentLang === 'id' ? '🌐 ID / EN' : '🌐 EN / ID';
+            } else {
+                // Fallback - just toggle button text
+                this.textContent = this.textContent.includes('ID / EN') ? '🌐 EN / ID' : '🌐 ID / EN';
+                alert('Translate: Gunakan menu browser atau refresh halaman');
+            }
+        });
     </script>
     <script type="text/javascript"
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

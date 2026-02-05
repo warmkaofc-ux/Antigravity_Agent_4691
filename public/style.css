@@ -637,21 +637,36 @@ button.btn-primary:active {
     bottom: 7rem;
     right: 2rem;
     z-index: 10000;
+    pointer-events: auto !important;
+}
+
+.translate-btn {
     background: rgba(30, 34, 45, 0.95);
     backdrop-filter: blur(10px);
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1rem;
     border-radius: 2rem;
     border: 1px solid var(--accent);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    animation: fadeIn 0.3s ease-out;
-    /* Force compact dimensions */
-    max-width: 160px;
-    min-height: 44px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
     display: flex;
     align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    min-width: 100px;
     justify-content: center;
-    pointer-events: auto !important;
-    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.translate-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.translate-btn:active {
+    transform: scale(0.95);
 }
 
 /* Force Google Widget to be transparent/cleaner */
