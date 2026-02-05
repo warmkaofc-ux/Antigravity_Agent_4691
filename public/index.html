@@ -194,7 +194,13 @@
     <script type="text/javascript"
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    <script type="module" src="app.js"></script>
+    <!-- Firebase SDK (compat version for non-module scripts) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+
+    <!-- App Scripts (standard, no modules) -->
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

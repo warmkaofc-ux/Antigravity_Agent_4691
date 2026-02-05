@@ -1,8 +1,6 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+// Firebase Configuration - Uses Firebase CDN (compat version for non-module scripts)
+// Firebase will be initialized via CDN script tags in index.html
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDsXT710FFpWZD9NEVym9LtNsJviIeeer0",
     authDomain: "antigravityagent4691.firebaseapp.com",
@@ -13,10 +11,22 @@ const firebaseConfig = {
     measurementId: "G-E5VBZPVK0H"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Initialize Firebase (using compat libraries loaded via CDN)
+let firebaseApp = null;
+let analytics = null;
 
-console.log("Firebase Initialized:", app.name);
-
-export { app, analytics };
+function initFirebase() {
+    try {
+        if (typeof firebase !== 'undefined') {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            if (firebase.analytics) {
+                analytics = firebase.analytics();
+            }
+            console.log("Firebase Initialized:", firebaseApp.name);
+        } else {
+            console.warn("Firebase SDK not loaded");
+        }
+    } catch (e) {
+        console.error("Firebase init error:", e);
+    }
+}
