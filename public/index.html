@@ -183,9 +183,11 @@
     </div>
 
     <!-- Hidden Google Translate Widget -->
-    <div id="google_translate_element" style="display:none;"></div>
+    <div id="google_translate_element" style="position:absolute; top:-9999px; left:-9999px;"></div>
 
     <script type="text/javascript">
+        var currentLang = 'en'; // Track current language
+
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
                 pageLanguage: 'en',
@@ -195,19 +197,44 @@
             }, 'google_translate_element');
         }
 
+        // Set cookie for Google Translate
+        function setGoogleTranslateCookie(lang) {
+            var domain = location.hostname;
+            document.cookie = 'googtrans=/en/' + lang + ';path=/;domain=' + domain;
+            document.cookie = 'googtrans=/en/' + lang + ';path=/';
+        }
+
         // Custom translate toggle
         document.getElementById('translateToggle').addEventListener('click', function () {
-            // Trigger Google Translate dropdown
-            var widget = document.querySelector('.goog-te-combo');
-            if (widget) {
-                var currentLang = widget.value;
-                widget.value = currentLang === 'id' ? 'en' : 'id';
-                widget.dispatchEvent(new Event('change'));
-                this.textContent = currentLang === 'id' ? '🌐 ID / EN' : '🌐 EN / ID';
+            var btn = this;
+
+            // Try multiple methods
+            var combo = document.querySelector('.goog-te-combo');
+            if (combo) {
+                // Method 1: Direct combo selection
+                var newLang = currentLang === 'en' ? 'id' : 'en';
+                combo.value = newLang;
+                combo.dispatchEvent(new Event('change', { bubbles: true }));
+                currentLang = newLang;
+                btn.textContent = newLang === 'id' ? '🌐 EN' : '🌐 ID';
             } else {
-                // Fallback - just toggle button text
-                this.textContent = this.textContent.includes('ID / EN') ? '🌐 EN / ID' : '🌐 ID / EN';
-                alert('Translate: Gunakan menu browser atau refresh halaman');
+                // Method 2: Cookie + reload
+                var newLang = currentLang === 'en' ? 'id' : 'en';
+                setGoogleTranslateCookie(newLang);
+                currentLang = newLang;
+                btn.textContent = newLang === 'id' ? '🌐 EN' : '🌐 ID';
+
+                // Reload to apply translation
+                location.reload();
+            }
+        });
+
+        // Check if already translated on load
+        document.addEventListener('DOMContentLoaded', function () {
+            var googtrans = document.cookie.match(/googtrans=\/en\/(\w+)/);
+            if (googtrans && googtrans[1] === 'id') {
+                currentLang = 'id';
+                document.getElementById('translateToggle').textContent = '🌐 EN';
             }
         });
     </script>
