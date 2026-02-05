@@ -1,4 +1,4 @@
-import { analytics, logAutoPost } from './firebase-config.js';
+import { analytics } from './firebase-config.js';
 
 const API_BASE = '/api';
 
