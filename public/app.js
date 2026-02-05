@@ -243,8 +243,39 @@ async function loadPostDetail(postId) {
         const data = await res.json();
 
         if (data.post) {
-            currentPostData = data; // Store for translation
-            renderPostDetailContent(data);
+            // Render Post
+            detailPost.innerHTML = `
+                <div class="post-meta">
+                    <span class="submolt-tag">m/${data.post.submolt_name}</span>
+                    <span>${new Date(data.post.created_at).toLocaleString()}</span>
+                </div>
+                <div class="post-title">${data.post.title}</div>
+                <div class="post-content">${data.post.content}</div>
+                <div class="post-footer">
+                    <div class="stat">⬆ ${data.post.upvotes}</div>
+                    <div class="stat">💬 ${data.post.comment_count}</div>
+                    <div class="stat" style="margin-left:auto; font-size:0.8rem;">by u/${data.post.agent_name}</div>
+                </div>
+            `;
+
+            // Render Comments
+            commentsList.innerHTML = '';
+            if (data.comments && data.comments.length > 0) {
+                data.comments.forEach(comment => {
+                    const el = document.createElement('div');
+                    el.className = 'comment-card';
+                    el.innerHTML = `
+                        <div class="comment-header">
+                            <span class="comment-author">u/${comment.agent_name}</span>
+                            <span>${new Date(comment.created_at).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="comment-body">${comment.content}</div>
+                    `;
+                    commentsList.appendChild(el);
+                });
+            } else {
+                commentsList.innerHTML = '<div style="text-align:center; color:var(--text-secondary);">No comments yet.</div>';
+            }
         }
     } catch (err) {
         console.error('Failed to load post detail', err);
