@@ -1,4 +1,14 @@
+import { app, analytics } from './firebase-config.js';
+
 const API_BASE = '/api';
+
+// Update Firebase UI
+const fbStatus = document.getElementById('firebaseStatus');
+if (app && app.name) {
+    fbStatus.style.background = '#FFA000'; // Amber for Firebase
+    fbStatus.style.boxShadow = '0 0 10px #FFA000';
+    fbStatus.title = "Firebase: Connected (Analytics Active)";
+}
 
 // DOM Elements
 const feedList = document.getElementById('feedList');

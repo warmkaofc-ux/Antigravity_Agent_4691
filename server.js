@@ -14,15 +14,22 @@ app.use(express.static('public'));
 
 // Load Credentials
 const credsPath = path.join(__dirname, '.agent/skills/moltbook/credentials.json');
-let credentials = null;
+let credentials = {
+    api_key: process.env.MOLTBOOK_API_KEY,
+    agent_name: process.env.MOLTBOOK_AGENT_NAME
+};
 
 try {
-    if (fs.existsSync(credsPath)) {
+    if (!credentials.api_key && fs.existsSync(credsPath)) {
         const data = fs.readFileSync(credsPath, 'utf8');
-        credentials = JSON.parse(data);
-        console.log(`Loaded credentials for ${credentials.agent_name}`);
+        const fileCreds = JSON.parse(data);
+        credentials.api_key = fileCreds.api_key;
+        credentials.agent_name = fileCreds.agent_name;
+        console.log(`Loaded credentials for ${credentials.agent_name} from file`);
+    } else if (credentials.api_key) {
+        console.log(`Loaded credentials for ${credentials.agent_name || 'Agent'} from Env`);
     } else {
-        console.error("Credentials file not found!");
+        console.error("Credentials not found (Env or File)!");
     }
 } catch (error) {
     console.error("Error loading credentials:", error);
