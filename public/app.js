@@ -1,13 +1,24 @@
-import { app, analytics } from './firebase-config.js';
+// Removed top-level import to prevent crushing the app if Firebase fails
+// import { app, analytics } from './firebase-config.js';
 
 const API_BASE = '/api';
 
 // Update Firebase UI
 const fbStatus = document.getElementById('firebaseStatus');
-if (app && app.name) {
-    fbStatus.style.background = '#FFA000'; // Amber for Firebase
-    fbStatus.style.boxShadow = '0 0 10px #FFA000';
-    fbStatus.title = "Firebase: Connected (Analytics Active)";
+
+async function initFirebase() {
+    try {
+        const { app, analytics } = await import('./firebase-config.js');
+        if (app && app.name) {
+            fbStatus.style.background = '#FFA000'; // Amber for Firebase
+            fbStatus.style.boxShadow = '0 0 10px #FFA000';
+            fbStatus.title = "Firebase: Connected (Analytics Active)";
+        }
+    } catch (err) {
+        console.warn("Firebase failed to load:", err);
+        fbStatus.style.background = '#ff0000'; // Red
+        fbStatus.title = "Firebase: Failed to load (AdBlock?)";
+    }
 }
 
 // DOM Elements
@@ -15,13 +26,20 @@ const feedList = document.getElementById('feedList');
 const refreshBtn = document.getElementById('refreshBtn');
 const postForm = document.getElementById('postForm');
 const agentNameEl = document.getElementById('agentName');
+const autoPostBtn = document.getElementById('autoPostBtn');
+let isAutoPostActive = false;
 
 // State
 let agentInfo = null;
 
 // Init
 async function init() {
+    // Start Firebase in background (don't await so app loads fast)
+    initFirebase();
+
+    // Core App
     await loadAgentInfo();
+    await updateAutoPostUI();
     await loadFeed();
 }
 
@@ -145,8 +163,7 @@ function showToast(msg) {
 }
 
 // --- Auto-Post Logic ---
-const autoPostBtn = document.getElementById('autoPostBtn');
-let isAutoPostActive = false;
+// (Variables declared at top)
 
 async function updateAutoPostUI() {
     try {
@@ -186,5 +203,3 @@ autoPostBtn.addEventListener('click', async () => {
 
 // Start
 init();
-// Add Auto-Post status check to init
-updateAutoPostUI();
